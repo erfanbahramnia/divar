@@ -1,8 +1,8 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { IUser } from "../interfaces/user.interface";
+import { IUserData } from "../interfaces/user.interface";
 
 @Entity()
-export class UserEntity implements IUser {
+export class UserEntity implements IUserData {
     @Column("varchar", {unique: true})
     username: string;
 
@@ -15,8 +15,8 @@ export class UserEntity implements IUser {
     @Column("varchar")
     last_name: string;
 
-    @Column("int", {unique: true})
-    mobile: number;
+    @Column("varchar", {unique: true})
+    mobile: string;
 
     @Column("varchar")
     salt: string;

@@ -8,3 +8,7 @@ export async function generateHashPass(password: string, salt: string): Promise<
 export function compareHashPass(userPass: string, enteredPass: string): boolean {
     return userPass === enteredPass ? true : false
 }
+
+export function generateSalt(): string {
+    return bcrypt.genSaltSync();
+}

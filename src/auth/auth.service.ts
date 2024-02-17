@@ -1,8 +1,9 @@
 import { Body, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
+import { IUser, IUserData, IUserRegisterData } from "src/users/interfaces/user.interface";
 import { UsersService } from "src/users/users.service";
-import { compareHashPass, generateHashPass } from "src/utils/bcrypt";
+import { compareHashPass, generateHashPass, generateSalt } from "src/utils/bcrypt";
 
 @Injectable()
 export class AuthService {
@@ -28,13 +29,29 @@ export class AuthService {
         };
         
         // payload for jwt 
+        return await this.generateToken(user)
+    }
+
+    async register(userData: IUser) {
+        // generate random salt for user
+        const salt = generateSalt();
+        // generateHash pass with salt
+        const hash = await generateHashPass(userData.password, salt);
+        // complete user data
+        const user: IUserRegisterData = {...userData, salt, password: hash};
+        // save data in db
+        const result = await this.usersService.register(user);
+        // check result 
+        if(!result) {
+            throw new UnauthorizedException();
+        };
+        return await this.generateToken(result)
+    }
+
+    private async generateToken (user: IUserData) {
         const payload = { userId: user.userId, username: user.username };
         return {
             access_token: await this.jwtService.signAsync(payload, {secret: this.configService.get<string>("secretKey"), expiresIn: "3600s" })
         }
-    }
-
-    register() {
-
     }
 }
