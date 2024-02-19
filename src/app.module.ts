@@ -5,12 +5,16 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './users/entities/user.entity';
+import { DeveloperModule } from './developer/developer.module';
 
 @Module({
     imports: [
         AuthModule, 
-        UsersModule, 
-        ConfigModule.forRoot(),
+        UsersModule,
+        DeveloperModule, 
+        ConfigModule.forRoot({
+            isGlobal: true
+        }),
         JwtModule.register({
             global: true
         }),

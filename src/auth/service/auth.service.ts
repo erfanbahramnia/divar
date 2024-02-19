@@ -1,8 +1,8 @@
-import { Body, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { IUser, IUserData, IUserRegisterData } from "src/users/interfaces/user.interface";
-import { UsersService } from "src/users/users.service";
+import { UsersService } from "src/users/service/users.service";
 import { compareHashPass, generateHashPass, generateSalt } from "src/utils/bcrypt";
 
 @Injectable()

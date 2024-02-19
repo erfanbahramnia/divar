@@ -2,12 +2,12 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UseGuards } from "@nestjs/common";
 import { ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
 // services
-import { AuthService } from "./auth.service";
+import { AuthService } from "../service/auth.service";
 // dtos
-import { UserLoginDto } from "./dtos/userLogin.dto";
-import { UserRegisterDto } from "./dtos/userRegister.dto";
+import { UserLoginDto } from "../dtos/userLogin.dto";
+import { UserRegisterDto } from "../dtos/userRegister.dto";
 // gaurds
-import { AuthGuard } from "./auth.guard";
+import { AuthGuard } from "../auth.guard";
 
 @ApiTags("auth")
 @Controller("/auth")
