@@ -9,6 +9,7 @@ import { UserEntity } from "src/users/entities/user.entity";
 import { IUserData } from "src/users/interfaces/user.interface";
 import { generateSalt } from "src/utils/bcrypt";
 import { NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { Role } from "src/constants/role.enum";
 
 describe("AuthService", () => {
     let authService: AuthService;
@@ -72,6 +73,7 @@ describe("AuthService", () => {
             first_name: "string",
             last_name: "string",
             mobile: "09229571721",
+            role: Role.user,
             salt: "$2b$10$HWrwPflpaYROOt9tov/SiO",
             userId: 2
         }
@@ -101,6 +103,7 @@ describe("AuthService", () => {
             first_name: "string",
             last_name: "string",
             mobile: "09229571721",
+            role: Role.user,
             salt: "$2b$10$HWrwPflpaYROOt9tov/SiO",
             userId: 2
         }

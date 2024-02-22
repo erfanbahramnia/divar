@@ -7,7 +7,7 @@ import { AuthService } from "../service/auth.service";
 import { UserLoginDto } from "../dtos/userLogin.dto";
 import { UserRegisterDto } from "../dtos/userRegister.dto";
 // gaurds
-import { AuthGuard } from "../auth.guard";
+import { AuthGuard } from "src/guards/auth.guard";
 
 @ApiTags("auth")
 @Controller("/auth")

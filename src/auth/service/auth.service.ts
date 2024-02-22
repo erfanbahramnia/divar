@@ -4,6 +4,7 @@ import { JwtService } from "@nestjs/jwt";
 import { IUser, IUserData, IUserRegisterData } from "src/users/interfaces/user.interface";
 import { UsersService } from "src/users/service/users.service";
 import { compareHashPass, generateHashPass, generateSalt } from "src/utils/bcrypt";
+import { IUserPayload } from "../interfaces/IUserPayload.interface";
 
 @Injectable()
 export class AuthService {
@@ -48,8 +49,13 @@ export class AuthService {
         return await this.generateToken(result)
     }
 
-    private async generateToken (user: IUserData) {
-        const payload = { userId: user.userId, username: user.username };
+    async verifyToken(token: string): Promise<IUserPayload> {
+        console.log("sdfd")
+        return await this.jwtService.verify(token, {secret: this.configService.get<string>("secretKey")});
+    }
+
+    async generateToken (user: IUserData) {
+        const payload: IUserPayload = { userId: user.userId, username: user.username };
         return {
             access_token: await this.jwtService.signAsync(payload, {secret: this.configService.get<string>("secretKey"), expiresIn: "3600s" })
         }
