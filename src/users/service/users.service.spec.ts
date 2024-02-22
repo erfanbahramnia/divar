@@ -3,6 +3,7 @@ import { UsersService } from "./users.service";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { UserEntity } from "../entities/user.entity";
 import { IUserData, IUserRegisterData } from "../interfaces/user.interface";
+import { Role } from "src/constants/role.enum";
 
 
 describe("UsersService", () => {
@@ -46,6 +47,7 @@ describe("UsersService", () => {
             username: "erfanbahramnia",
             mobile: "09229571721",
             password: "fadhflhalsdf",
+            role: Role.user,
             salt: "fadsf",
             userId: 1,
         }
@@ -79,6 +81,7 @@ describe("UsersService", () => {
             username: "erfanbahramnia",
             mobile: "09229571721",
             password: "fadhflhalsdf",
+            role: Role.user,
             salt: "fadsf",
             userId: 1,
         }

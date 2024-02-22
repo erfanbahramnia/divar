@@ -1,5 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { IUserData } from "../interfaces/user.interface";
+import { Role } from "src/constants/role.enum";
 
 @Entity()
 export class UserEntity implements IUserData {
@@ -8,6 +9,9 @@ export class UserEntity implements IUserData {
 
     @Column("varchar")
     password: string;
+
+    @Column("varchar", {default: Role.user})
+    role: string;
 
     @Column("varchar")
     first_name: string;
