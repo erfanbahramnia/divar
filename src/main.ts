@@ -11,6 +11,17 @@ async function bootstrap() {
     .setTitle("Divar")
     .setDescription("a backend for divar application powered by nestjs")
     .setVersion("1.0")
+    .addBasicAuth(
+      {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+        name: "JWT",
+        description: "Enter jwt token",
+        in: "headers"
+      },
+      "JWT-AUTH"
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api", app, document);
