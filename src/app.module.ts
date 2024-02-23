@@ -6,11 +6,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './users/entities/user.entity';
 import { DeveloperModule } from './developer/developer.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
     imports: [
         AuthModule, 
         UsersModule,
+        AdminModule,
         DeveloperModule, 
         ConfigModule.forRoot({
             isGlobal: true

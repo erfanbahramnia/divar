@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { Repository, UpdateResult } from "typeorm";
+import { DeleteResult, Repository, UpdateResult } from "typeorm";
 import { UserEntity } from "../entities/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { IUserData, IUserRegisterData, UpdateUserData } from "../interfaces/user.interface";
@@ -18,6 +18,10 @@ export class UsersService {
     async findUserByMobile(mobile: string): Promise<IUserData | undefined> {
       // find user by username
       return await this.userRepository.findOneBy({ mobile })
+    }
+
+    async findUserById(userId: number): Promise<IUserData | undefined> {
+      return this.userRepository.findOneBy({ userId })
     }
 
     async register(userData: IUserRegisterData): Promise<IUserData> {
@@ -50,5 +54,25 @@ export class UsersService {
       const updateResult = await this.userRepository.update({ username }, data);
       // return result
       return updateResult;
+    }
+
+    async deleteUserById(userId: number): Promise<DeleteResult> {
+      // check user exist
+      const user = this.findUserById(userId);
+      if(!user) 
+        throw new NotFoundException("User not found!");
+      // delete user
+      return this.userRepository.delete({userId});
+    }
+
+    async updateUserRole(userId: number, role: string): Promise<UpdateResult>  {
+      // check user exist
+      const user = await this.userRepository.findOneBy({ userId });
+      if(!user) 
+        throw new NotFoundException("User not found!");
+      // update user
+      const result = await this.userRepository.update({ userId }, { role })
+      // return result
+      return result;
     }
 }
