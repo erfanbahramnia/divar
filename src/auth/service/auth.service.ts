@@ -55,7 +55,7 @@ export class AuthService {
     }
 
     async generateToken (user: IUserData) {
-        const payload: IUserPayload = { userId: user.userId, username: user.username };
+        const payload: IUserPayload = { userId: user.userId, username: user.username, role: user.role };
         return {
             access_token: await this.jwtService.signAsync(payload, {secret: this.configService.get<string>("secretKey"), expiresIn: "3600s" })
         }
