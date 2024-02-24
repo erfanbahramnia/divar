@@ -25,6 +25,17 @@ export class UsersService {
     }
 
     async register(userData: IUserRegisterData): Promise<IUserData> {
+      // check username or mobile exist or not
+      const { username, mobile } = userData
+      // chekc username
+      const checkUsername = await this.findOne(username)
+      if(checkUsername)
+        throw new BadRequestException("this username has been used!")
+      // chekc username
+      const checkMobile = await this.findUserByMobile(mobile)
+      if(checkMobile)
+        throw new BadRequestException("this mobile has been used!")
+      // create new user
       const data = this.userRepository.create(userData)
       return await this.userRepository.save(data);
     }
