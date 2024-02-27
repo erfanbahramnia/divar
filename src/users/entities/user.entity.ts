@@ -1,6 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { IUserData } from "../interfaces/user.interface";
 import { Role } from "src/constants/role.enum";
+import { ProductEntity } from "src/product/entities/product.entity";
 
 @Entity()
 export class UserEntity implements IUserData {
@@ -24,6 +25,9 @@ export class UserEntity implements IUserData {
 
     @Column("varchar")
     salt: string;
+
+    @OneToMany(() => ProductEntity, (productEntity) => productEntity.user)
+    products: ProductEntity[]; 
 
     @PrimaryGeneratedColumn()
     userId: number;

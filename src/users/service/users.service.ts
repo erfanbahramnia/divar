@@ -20,7 +20,7 @@ export class UsersService {
       return await this.userRepository.findOneBy({ mobile })
     }
 
-    async findUserById(userId: number): Promise<IUserData | undefined> {
+    async findUserById(userId: number) {
       return this.userRepository.findOneBy({ userId })
     }
 
