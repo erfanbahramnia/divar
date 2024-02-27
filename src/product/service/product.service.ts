@@ -17,6 +17,7 @@ export class ProductService {
         private readonly userService: UsersService
     ) {};
 
+    // add product by user
     async addProduct(productData: AddProductDto, userId: number) {
         // create product
         const product = this.productRepo.create({
@@ -53,5 +54,16 @@ export class ProductService {
             }
         // unsuccesful
         throw new InternalServerErrorException("Internal Server Error");
+    }
+
+    // get all products
+    async getProducts() {
+       return await this.productRepo
+            .createQueryBuilder("ProductEntity")
+            .leftJoin("ProductEntity.user", "UserEntity")
+            .leftJoin("ProductEntity.properties", "ProductPropertyEntity")
+            .addSelect(["UserEntity.username"])
+            .addSelect(["ProductPropertyEntity.key", "ProductPropertyEntity.value"])
+            .getMany()
     }
 }
