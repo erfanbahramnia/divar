@@ -33,5 +33,17 @@ export class AdminController {
             status: HttpStatus.OK,
             message: "user deleted successfuly"
         };
+    };
+
+    @Roles([Role.admin])
+    @ApiOperation({summary: "delete product by admin"})
+    @ApiBearerAuth("JWT-AUTH")
+    @ApiUnauthorizedResponse({description: "Access denied!"})
+    @ApiOkResponse({description: "Product deleted sucessfully"})
+    @ApiInternalServerErrorResponse({description: "Internal Server Error"})
+    @Get("/delete/product/:id")
+    async deleteProductByAdmin(@Param("id") productId: number) {
+        // delete product
+        return this.adminService.deleteProductByAdmin(productId);
     }
 }

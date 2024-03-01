@@ -67,6 +67,7 @@ export class ProductService {
             .getMany()
     };
 
+    // delete product by user(user own product)
     async deleteProductByUser(productId: number, userId: number) {
         // check product exist
         const result = await this.productRepo
@@ -94,6 +95,24 @@ export class ProductService {
         return {
             status: HttpStatus.OK,
             message: "product deleted sucessfuly"
+        };
+    };
+
+    // delete product by admin(higher access)
+    async deleteProductByAdmin(productId: number) {
+        // check product exist
+        const product = await this.productRepo.findOneBy({productId});
+        if(!product) 
+            throw new NotFoundException("Product not found!")
+        // delete product
+        const result = await this.productRepo.delete({productId});
+        // check product deleted or not
+        if(!result.affected)
+            throw new InternalServerErrorException("Product did not deleted!")
+        // success
+        return {
+            status: HttpStatus.OK,
+            message: "product deleted succesfuly"
         };
     }
 }

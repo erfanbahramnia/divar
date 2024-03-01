@@ -23,6 +23,9 @@ import { ProductPropertyEntity } from "./entities/productProperty.entity";
         // App Modules
         UsersModule,
         CategoryModule,
+    ],
+    exports: [
+        ProductService
     ]
 })
 export class ProductModule {};
