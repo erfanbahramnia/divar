@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { ProductEntity } from "../entities/product.entity";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -54,7 +54,7 @@ export class ProductService {
             }
         // unsuccesful
         throw new InternalServerErrorException("Internal Server Error");
-    }
+    };
 
     // get all products
     async getProducts() {
@@ -65,5 +65,35 @@ export class ProductService {
             .addSelect(["UserEntity.username"])
             .addSelect(["ProductPropertyEntity.key", "ProductPropertyEntity.value"])
             .getMany()
+    };
+
+    async deleteProductByUser(productId: number, userId: number) {
+        // check product exist
+        const result = await this.productRepo
+            .createQueryBuilder("ProductEntity")
+            .addSelect(["ProductEntity.productId"])
+            .leftJoin("ProductEntity.user", "UserEntity")
+            .where("productId = :productId", { productId })
+            .andWhere("UserEntity.userId = :userId", { userId })
+            .getOne()
+        console.log(result);
+        
+        
+        // if product not found => throw error
+        if(!result)
+            throw new NotFoundException("product not found!");
+
+        // get product id
+        const id = result.productId
+        // delete product
+        const res = await this.productRepo.delete({ productId: id })
+        // check product deleted or not
+        if(!res.affected) 
+            throw new InternalServerErrorException("could not delete product");
+        // success
+        return {
+            status: HttpStatus.OK,
+            message: "product deleted sucessfuly"
+        };
     }
 }

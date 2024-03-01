@@ -9,7 +9,9 @@ export class ProductPropertyEntity {
     @Column("varchar")    
     value: string;
 
-    @ManyToOne(() => ProductEntity, (productEntity) => productEntity.productId)    
+    @ManyToOne(() => ProductEntity, (productEntity) => productEntity.productId, {
+        onDelete: "CASCADE"
+    })
     productId: ProductEntity;
 
     @PrimaryGeneratedColumn()

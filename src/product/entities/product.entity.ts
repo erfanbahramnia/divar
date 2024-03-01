@@ -29,6 +29,8 @@ export class ProductEntity implements IProductDataDb {
     @JoinTable()
     category?: CategoryEntity[];
 
-    @ManyToOne(() => UserEntity, (userEntity) => userEntity.userId)
+    @ManyToOne(() => UserEntity, (userEntity) => userEntity.userId, {
+        onDelete: "CASCADE"
+    })
     user: UserEntity;
 }
