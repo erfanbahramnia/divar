@@ -7,6 +7,8 @@ import { ProductPropertyEntity } from "../entities/productProperty.entity";
 import { UsersService } from "src/users/service/users.service";
 import { Property } from "../interface/product.interface";
 import { AddProductDto } from "../dtos/addProduct.dto";
+import { UpdateProductDto } from "../dtos/updateProduct.dto";
+import { objectValueValidator } from "src/utils/objectValidation";
 
 @Injectable()
 export class ProductService {
@@ -76,9 +78,7 @@ export class ProductService {
             .leftJoin("ProductEntity.user", "UserEntity")
             .where("productId = :productId", { productId })
             .andWhere("UserEntity.userId = :userId", { userId })
-            .getOne()
-        console.log(result);
-        
+            .getOne()        
         
         // if product not found => throw error
         if(!result)
@@ -114,5 +114,53 @@ export class ProductService {
             status: HttpStatus.OK,
             message: "product deleted succesfuly"
         };
-    }
+    };
+
+    async updateProductByUser(data: UpdateProductDto, productId: number, userId: number) {
+        // validate data
+        const validateData = objectValueValidator(data)
+        // check product exist
+        const product = await this.productRepo
+            .createQueryBuilder("ProductEntity")
+            .leftJoin("ProductEntity.user", "UserEntity")
+            .where("ProductEntity.productId = :productId", { productId })
+            .andWhere("UserEntity.userId = :userId", { userId })
+            .getOne()
+        if(!product)
+            throw new NotFoundException("Product not found!");
+        // check user add property for product or not
+        if(validateData?.properties) {
+            // make reference each property to product 
+            validateData.properties.map(async(property) => {
+                const newProp = this.productPropertyRepo.create({
+                    key: property.key,
+                    value: property.value,
+                })
+                newProp.productId = product;
+                await this.productPropertyRepo.save(newProp);
+            });
+        };
+        // get data of product that valid for update
+        delete validateData?.properties;
+        // update product
+        const updateResult = await this.productRepo.update({productId}, validateData)
+        // check validateData updated or not
+        if(!updateResult.affected) 
+            throw new InternalServerErrorException("Did not update product data!");
+        // success
+        const newProduct = await this.productRepo
+            .createQueryBuilder("ProductEntity")
+            .leftJoin("ProductEntity.properties", "ProductPropertyEntity")
+            .leftJoin("ProductEntity.user", "UserEntity")
+            .addSelect(["UserEntity.username"])
+            .addSelect(["ProductPropertyEntity.key", "ProductPropertyEntity.value"])
+            .where("ProductEntity.productId = :productId", { productId })
+            .getOne();
+        // success 
+        return {
+            newProduct,
+            status: HttpStatus.OK,
+            message: "Product updated successfuly"
+        };
+    };
 }

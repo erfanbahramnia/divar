@@ -4,6 +4,7 @@ import { AddProductDto } from "../dtos/addProduct.dto";
 import { ApiBearerAuth, ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
 import { AuthGuard } from "src/guards/auth.guard";
 import { UserRequestData } from "src/interfaces/expresRequest.interface";
+import { UpdateProductDto } from "../dtos/updateProduct.dto";
 
 @ApiTags("Product")
 @Controller("/product")
@@ -49,5 +50,20 @@ export class ProductController {
         const { userId } = req.user;
         // get delete reuslt
         return await this.productService.deleteProductByUser(productId, userId);
+    }
+
+    @UseGuards(AuthGuard)
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth("JWT-AUTH")
+    @ApiOperation({description: "delete prodcut by user"})
+    @ApiUnauthorizedResponse({description: "please login to your account"})
+    @ApiOkResponse({description: "product deleted successfully"})
+    @ApiInternalServerErrorResponse({description: "Internal Server Error"})
+    @Post("/update/:id")
+    async updateProductByUser(@Param("id") productId: number, @Body() updateProductDto: UpdateProductDto, @Request() req: UserRequestData) {
+        // get user id
+        const { userId } = req.user;
+        // get delete reuslt
+        return await this.productService.updateProductByUser(updateProductDto, productId, userId);
     }
 }

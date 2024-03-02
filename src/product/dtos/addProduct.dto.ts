@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsArray, IsString, Matches, ValidateNested } from "class-validator";
 
-class PropertyDto {
+export class PropertyDto {
     @ApiProperty()
     @IsString()
     key: string
