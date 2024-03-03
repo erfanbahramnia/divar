@@ -53,10 +53,27 @@ export class CategoryService {
             category: result,
             message: "new category created successfuly"
         };
-    }
+    };
 
     async getCategories() {
         // get all categories in form of tree
         return await this.categoryRepo.manager.getTreeRepository(CategoryEntity).findTrees()
+    };
+
+    async deleteCategory(categoryId: number) {
+        // check category exist
+        const category = await this.categoryRepo.findOneBy({ categoryId });
+        if(!category)
+            throw new NotFoundException("Could not find category!");
+        // delete category
+        const result = await this.categoryRepo.delete({ categoryId });
+        // check delete result
+        if(!result.affected)
+            throw new InternalServerErrorException("Could not delete any data");
+        // success
+        return {
+            status: HttpStatus.OK,
+            message: "Category deleted successfuly"
+        }
     }
 }

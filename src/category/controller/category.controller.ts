@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, UseGuards } from "@nestjs/common";
 import { ApiBadRequestResponse, ApiBearerAuth, ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
 import { CategoryService } from "../service/category.service";
 import { AddCategoryDto } from "../dtos/addCategory.dto";
@@ -26,6 +26,20 @@ export class CategoryController {
     @Post("/add")
     async addCategory(@Body() addCategoryDto: AddCategoryDto) {
         return await this.categoryService.addCategory(addCategoryDto)
+    };
+
+    @UseGuards(AuthGuard, RolesGuard)
+    @HttpCode(HttpStatus.CREATED)
+    @ApiOperation({description: "delete category by admin"})
+    @ApiBearerAuth("JWT-AUTH")
+    @ApiOkResponse({description: "Category deleted successfuly"})
+    @ApiBadRequestResponse({description: "Bad Request"})
+    @ApiInternalServerErrorResponse({description: "Internal Server Error"})
+    @ApiUnauthorizedResponse({description: "Please login to your acount"})
+    @Roles([Role.admin])
+    @Post("/delete/:id")
+    async deleteCategory(@Param("id", ParseIntPipe) id: number) {
+        return await this.categoryService.deleteCategory(id);
     };
 
     @HttpCode(HttpStatus.CREATED)
