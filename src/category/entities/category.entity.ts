@@ -1,18 +1,22 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { ICategoryData } from "../interface/category.interface";
 import { ProductEntity } from "src/product/entities/product.entity";
 
 @Entity()
 export class CategoryEntity implements ICategoryData {
-    @Column()
+    @Column("varchar")
     name: string;
 
-    @PrimaryColumn("int")
-    @OneToMany(() => CategoryEntity, (categoryEntity) => categoryEntity.parentId)
-    @ManyToMany(() => ProductEntity, (productEntity) => productEntity.category)
+    @PrimaryGeneratedColumn()
     categoryId: number;
+    
+    @OneToMany(() => CategoryEntity, (categoryEntity) => categoryEntity.parent)
+    children: CategoryEntity[];
+    
+    @ManyToMany(() => ProductEntity, (productEntity) => productEntity.category)
+    @JoinTable()
+    products: ProductEntity[];
 
-    @Column("int")
     @ManyToOne(() => CategoryEntity, (categoryEntity) => categoryEntity.categoryId)
-    parentId: number;
+    parent: CategoryEntity;
 }

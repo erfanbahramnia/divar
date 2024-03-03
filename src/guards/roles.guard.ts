@@ -1,18 +1,14 @@
 // nestjs
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { Observable } from "rxjs";
 // decorators
 import { Roles } from "src/decorators/roles.decorator";
-// services
-import { UsersService } from "src/users/service/users.service";
 
 // give access by RBAC(ROLE-BASE ACCESS CONTROL)
 @Injectable()
 export class RolesGuard implements CanActivate {
     constructor(
         private readonly reflector: Reflector,
-        private readonly userService: UsersService
     ) {};
 
     async canActivate(ctx: ExecutionContext): Promise<boolean> {

@@ -1,6 +1,6 @@
 import { BadRequestException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { ProductEntity } from "../entities/product.entity";
-import { In, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CategoryService } from "src/category/service/category.service";
 import { ProductPropertyEntity } from "../entities/productProperty.entity";
