@@ -1,7 +1,7 @@
 import { BadRequestException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CategoryEntity } from "../entities/category.entity";
-import { Repository } from "typeorm";
+import { IsNull, Repository } from "typeorm";
 import { AddCategoryDto } from "../dtos/addCategory.dto";
 
 @Injectable()
@@ -27,18 +27,18 @@ export class CategoryService {
                     children: true
                 }
             })
+            
             if(!parent)
                 throw new NotFoundException("Parent category not founded!");
             // check new category name is not same to parent name
             if(parent.name === categoryData.name)
                 throw new BadRequestException("category name should not be same with parent name");
             // check parent has same child name with new category
-            const childrenCategory = parent.children
-            
-            childrenCategory.map(child => {
+            parent.children.map(child => {
                 if(child.name === categoryData.name)
                     throw new BadRequestException("children's name of parent category should not be same!");
             });
+            
             // make relation category with parent
             category.parent = parent;
         }
@@ -53,5 +53,10 @@ export class CategoryService {
             category: result,
             message: "new category created successfuly"
         };
+    }
+
+    async getCategories() {
+        // get all categories in form of tree
+        return await this.categoryRepo.manager.getTreeRepository(CategoryEntity).findTrees()
     }
 }

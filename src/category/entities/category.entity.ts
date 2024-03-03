@@ -1,8 +1,9 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, Tree, TreeChildren, TreeParent } from "typeorm";
 import { ICategoryData } from "../interface/category.interface";
 import { ProductEntity } from "src/product/entities/product.entity";
 
 @Entity()
+@Tree("nested-set")
 export class CategoryEntity implements ICategoryData {
     @Column("varchar")
     name: string;
@@ -10,13 +11,13 @@ export class CategoryEntity implements ICategoryData {
     @PrimaryGeneratedColumn()
     categoryId: number;
     
-    @OneToMany(() => CategoryEntity, (categoryEntity) => categoryEntity.parent)
+    @TreeChildren()
     children: CategoryEntity[];
     
     @ManyToMany(() => ProductEntity, (productEntity) => productEntity.category)
     @JoinTable()
     products: ProductEntity[];
 
-    @ManyToOne(() => CategoryEntity, (categoryEntity) => categoryEntity.categoryId)
+    @TreeParent({ onDelete: 'CASCADE' })
     parent: CategoryEntity;
 }

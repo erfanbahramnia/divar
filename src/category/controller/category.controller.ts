@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from "@nestjs/common";
 import { ApiBadRequestResponse, ApiBearerAuth, ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
 import { CategoryService } from "../service/category.service";
 import { AddCategoryDto } from "../dtos/addCategory.dto";
@@ -7,14 +7,14 @@ import { AuthGuard } from "src/guards/auth.guard";
 import { Roles } from "src/decorators/roles.decorator";
 import { Role } from "src/constants/role.enum";
 
-@UseGuards(AuthGuard, RolesGuard)
 @ApiTags("Category")
 @Controller("/category")
 export class CategoryController {
     constructor(
         private readonly categoryService: CategoryService
-    ) {}
-
+        ) {}
+        
+    @UseGuards(AuthGuard, RolesGuard)
     @HttpCode(HttpStatus.CREATED)
     @ApiOperation({description: "add category by admin"})
     @ApiBearerAuth("JWT-AUTH")
@@ -26,5 +26,16 @@ export class CategoryController {
     @Post("/add")
     async addCategory(@Body() addCategoryDto: AddCategoryDto) {
         return await this.categoryService.addCategory(addCategoryDto)
+    };
+
+    @HttpCode(HttpStatus.CREATED)
+    @ApiOperation({description: "get all categories"})
+    @ApiOkResponse({description: "Category received successfuly"})
+    @ApiBadRequestResponse({description: "Bad Request"})
+    @ApiInternalServerErrorResponse({description: "Internal Server Error"})
+    @ApiUnauthorizedResponse({description: "Please login to your acount"})
+    @Get("/categories")
+    async getCategories() {
+        return this.categoryService.getCategories()
     }
 }
