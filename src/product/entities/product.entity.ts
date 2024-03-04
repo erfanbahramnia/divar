@@ -25,7 +25,7 @@ export class ProductEntity implements IProductDataDb {
     properties:ProductPropertyEntity[]
 
     @Column("int", { nullable: true })
-    @ManyToMany(() => CategoryEntity, (categoryEntity) => categoryEntity.categoryId)
+    @ManyToMany(() => CategoryEntity, (categoryEntity) => categoryEntity.categoryId, {cascade: true})
     @JoinTable()
     category?: CategoryEntity[];
 

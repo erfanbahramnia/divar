@@ -76,4 +76,10 @@ export class CategoryService {
             message: "Category deleted successfuly"
         }
     }
+
+    async findCategoryById(categoryId: number) {
+        const category = await this.categoryRepo.findOneBy({ categoryId });
+        // success
+        return category;
+    }
 }

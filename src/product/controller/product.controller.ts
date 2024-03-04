@@ -1,11 +1,12 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Request, UseGuards } from "@nestjs/common";
 import { ProductService } from "../service/product.service";
 import { AddProductDto } from "../dtos/addProduct.dto";
-import { ApiBearerAuth, ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
 import { AuthGuard } from "src/guards/auth.guard";
 import { UserRequestData } from "src/interfaces/expresRequest.interface";
 import { UpdateProductDto } from "../dtos/updateProduct.dto";
 import { DeletePropertyDto } from "../dtos/deleteProperty.dto";
+import { AddProductToCategoryDto } from "../dtos/addProductToCategory.dto";
 
 @ApiTags("Product")
 @Controller("/product")
@@ -80,5 +81,22 @@ export class ProductController {
         const { userId } = req.user;
         // result
         return await this.productService.deleteProductProperty(deletePropertyDto, productId, userId)
+    }
+
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth("JWT-AUTH")
+    @ApiOperation({description: "add product to cateogry by user"})
+    @ApiUnauthorizedResponse({description: "please login to your account"})
+    @ApiOkResponse({description: "product add to categories successfully"})
+    @ApiNotFoundResponse({description: "not found!"})
+    @ApiInternalServerErrorResponse({description: "Internal Server Error"})
+    @Post("/addToCategory/:productId")
+    async addProductToCategory(@Param("productId", ParseIntPipe) productId: number,@Body() addProductToCategoryDto: AddProductToCategoryDto, @Request() req: UserRequestData) {
+        // get user id
+        const { userId } = req.user;
+        // get categories id
+        const { categories } = addProductToCategoryDto
+        // update product
+        return await this.productService.addProductToCategory(productId, userId, categories);
     }
 }

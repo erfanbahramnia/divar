@@ -1,10 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNumber } from "class-validator";
 
-export class DeletePropertyDto {
+export class AddProductToCategoryDto {
     @ApiProperty({
         isArray: true
     })
     @IsNumber({}, {each: true})
-    propertiesId: number[];
+    categories: number[];
 }

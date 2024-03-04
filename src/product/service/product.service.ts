@@ -10,6 +10,7 @@ import { AddProductDto } from "../dtos/addProduct.dto";
 import { UpdateProductDto } from "../dtos/updateProduct.dto";
 import { objectValueValidator } from "src/utils/objectValidation";
 import { DeletePropertyDto } from "../dtos/deleteProperty.dto";
+import { CategoryEntity } from "src/category/entities/category.entity";
 
 @Injectable()
 export class ProductService {
@@ -199,5 +200,51 @@ export class ProductService {
             status: HttpStatus.OK,
             message: "properties deleted successfuly"
         }
+    };
+
+    async addProductToCategory(productId: number, userId: number, categories: number[]) {
+        // check categories id is not empty
+        if(!categories)
+            throw new BadRequestException("Please select a category to adding to product");
+        // check product exist
+        const product = await this.productRepo
+            .createQueryBuilder("ProductEntity")
+            .leftJoin("ProductEntity.user", "UserEntity")
+            .leftJoin("ProductEntity.category", "CategoryEntity")
+            .where("ProductEntity.productId = :productId", { productId })
+            .andWhere("UserEntity.userId = :userId", { userId })
+            .addSelect("CategoryEntity.categoryId")
+            .getOne()
+        if(!product)
+            throw new NotFoundException("Product not found!")
+        // check categories exist
+        let allCategories: CategoryEntity[] = [];
+        
+        for (const categoryId of categories) {
+            const category = await this.categoryService.findCategoryById(categoryId);
+            // check category added befor or not
+            for (const item of product.category) {
+                if(item.categoryId == category.categoryId)
+                    throw new BadRequestException(`Product already added to ${category.name} category`)
+            }
+            // check category exist
+            if(!category)
+                throw new NotFoundException("Category not found!")
+            allCategories.push(category)
+
+        }
+        console.log(allCategories);
+        
+        // save categories in product
+        product.category = allCategories;        
+        await this.productRepo.createQueryBuilder("ProductEntitu")
+            .relation("category")
+            .of(product)
+            .add(allCategories);
+        // success
+        return {
+            status: HttpStatus.OK,
+            message: `product added to ${ allCategories.length === 1 ? "category": "categories" }`
+        };
     };
 }

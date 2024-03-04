@@ -51,5 +51,5 @@ export class CategoryController {
     @Get("/categories")
     async getCategories() {
         return this.categoryService.getCategories()
-    }
+    };
 }
