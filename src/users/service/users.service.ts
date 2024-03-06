@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { DeleteResult, Repository, UpdateResult } from "typeorm";
 import { UserEntity } from "../entities/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { IUserData, IUserRegisterData, UpdateUserData } from "../interfaces/user.interface";
+import { compareHashPass, generateHashPass } from "src/utils/bcrypt";
 
 @Injectable()
 export class UsersService {
@@ -85,5 +86,24 @@ export class UsersService {
       const result = await this.userRepository.update({ userId }, { role })
       // return result
       return result;
+    }
+
+    async changePassword(oldPass: string, newPass: string, userId: number) {
+      // get user
+      const user = await this.userRepository.findOneBy({ userId })
+      // get old pass hash
+      const oldHashPass = await generateHashPass(oldPass, user.salt);
+      // check enterd pass is valid
+      if(!compareHashPass(user.password, oldHashPass)) 
+        throw new BadRequestException("Entered password is not valid");
+      // save new password
+      const newHashPass = await generateHashPass(newPass, user.salt);
+      user.password = newHashPass;
+      await this.userRepository.save(user);
+      // success
+      return {
+        status: HttpStatus.OK,
+        message: "User password updated successfuly"
+      };
     }
 }
