@@ -2,10 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
 
 async function bootstrap() {
   // create an instance of application
   const app = await NestFactory.create(AppModule);
+  // initialize helmet to server
+  app.use(helmet())
   // config swagger
   const config = new DocumentBuilder()
     .setTitle("Divar")
