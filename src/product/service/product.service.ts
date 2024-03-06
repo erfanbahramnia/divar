@@ -66,8 +66,10 @@ export class ProductService {
             .createQueryBuilder("ProductEntity")
             .leftJoin("ProductEntity.user", "UserEntity")
             .leftJoin("ProductEntity.properties", "ProductPropertyEntity")
+            .leftJoin("ProductEntity.category", "CategoryEntity")
             .addSelect(["UserEntity.username"])
             .addSelect(["ProductPropertyEntity.key", "ProductPropertyEntity.value", "ProductPropertyEntity.id"])
+            .addSelect(["CategoryEntity.name"])
             .getMany()
     };
 
@@ -247,4 +249,19 @@ export class ProductService {
             message: `product added to ${ allCategories.length === 1 ? "category": "categories" }`
         };
     };
+
+    async getCategoryProducts(categoryId: number) {
+        // get categories id
+        const categories = (await this.categoryService.getCategoriesById(categoryId))
+        // get all ids of categories
+        const ids = categories.map(child => child.categoryId);
+        // get products
+        return await this.productRepo.createQueryBuilder()
+            .leftJoin("ProductEntity.category", "CategoryEntity")
+            .leftJoin("ProductEntity.user", "UserEntity")
+            .where("CategoryEntity.categoryId IN (:...ids)", { ids })
+            .addSelect(["CategoryEntity.name"])
+            .addSelect(["UserEntity.username", "UserEntity.mobile"])
+            .getMany();
+    }
 }

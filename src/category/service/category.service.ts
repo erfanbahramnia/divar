@@ -37,7 +37,7 @@ export class CategoryService {
             parent.children.map(child => {
                 if(child.name === categoryData.name)
                     throw new BadRequestException("children's name of parent category should not be same!");
-            });
+            }); 
             
             // make relation category with parent
             category.parent = parent;
@@ -58,6 +58,37 @@ export class CategoryService {
     async getCategories() {
         // get all categories in form of tree
         return await this.categoryRepo.manager.getTreeRepository(CategoryEntity).findTrees()
+    };
+
+    async getCategoriesById(categoryId: number) {
+        // get category
+        // const parent = await this.categoryRepo.findOneBy({categoryId})
+        // console.log("parent", parent);
+        
+        // get all categories in form of tree
+        return await this.categoryRepo.manager.query(`
+            WITH RECURSIVE CategoryTree AS (
+                SELECT
+                    name,
+                    categoryId,
+                    parentCategoryId
+                FROM
+                    category_entity
+                where categoryId = ${categoryId}
+
+                UNION ALL
+
+                SELECT
+                    category.name,
+                    category.categoryId,
+                    category.parentCategoryId
+                FROM 
+                    category_entity category
+                INNER JOIN
+                    CategoryTree ct ON category.parentCategoryId = ct.categoryId
+            )
+            SELECT categoryId FROM CategoryTree
+        `)
     };
 
     async deleteCategory(categoryId: number) {
@@ -82,4 +113,6 @@ export class CategoryService {
         // success
         return category;
     }
+
+
 }

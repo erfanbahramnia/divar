@@ -3,7 +3,9 @@ import { ICategoryData } from "../interface/category.interface";
 import { ProductEntity } from "src/product/entities/product.entity";
 
 @Entity()
-@Tree("nested-set")
+@Tree("nested-set", {
+    closureTableName: "CategoryTree"
+})
 export class CategoryEntity implements ICategoryData {
     @Column("varchar")
     name: string;

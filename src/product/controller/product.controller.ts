@@ -99,4 +99,15 @@ export class ProductController {
         // update product
         return await this.productService.addProductToCategory(productId, userId, categories);
     }
+
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth("JWT-AUTH")
+    @ApiOperation({description: "get prodcut by category"})
+    @ApiUnauthorizedResponse({description: "please login to your account"})
+    @ApiOkResponse({description: "product recieved successfully"})
+    @ApiInternalServerErrorResponse({description: "Internal Server Error"})
+    @Get("/byCatgeory/:id")
+    async getCategoryProduct(@Param("id", ParseIntPipe) id: number) {
+        return await this.productService.getCategoryProducts(id);
+    }
 }
