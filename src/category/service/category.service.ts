@@ -114,5 +114,21 @@ export class CategoryService {
         return category;
     }
 
-
+    async changeName(name: string, categoryId: number) {
+        // get prodcut
+        const product = await this.categoryRepo.findOneBy({ categoryId })
+        // check product exist
+        if(!product)
+            throw new NotFoundException("Product not found!")
+        // change name
+        product.name = name;
+        // save changes
+        await this.categoryRepo.save(product)
+        // success
+        return {    
+            status: HttpStatus.OK,
+            message: "Category name updated successfuly",
+            product
+        };
+    }
 }

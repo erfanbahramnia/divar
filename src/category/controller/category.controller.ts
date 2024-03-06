@@ -52,4 +52,18 @@ export class CategoryController {
     async getCategories() {
         return this.categoryService.getCategories()
     };
+
+    @UseGuards(AuthGuard, RolesGuard)
+    @HttpCode(HttpStatus.CREATED)
+    @ApiOperation({description: "change category name by admin"})
+    @ApiBearerAuth("JWT-AUTH")
+    @ApiOkResponse({description: "Category name updated successfuly"})
+    @ApiBadRequestResponse({description: "Bad Request"})
+    @ApiInternalServerErrorResponse({description: "Internal Server Error"})
+    @ApiUnauthorizedResponse({description: "Please login to your acount"})
+    @Roles([Role.admin])
+    @Get("/changeName/:name/:id")
+    async changeCateogryName(@Param("id", ParseIntPipe) id: number, @Param("name") name: string) {
+        return this.categoryService.changeName(name, id);
+    };
 }
